@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lauf-Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafaf9;color:#0b0b0b;padding:1.25rem;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1rem}
+.stat{background:#f1f0eb;border-radius:8px;padding:.65rem .9rem}
+.stat-label{font-size:11px;color:#898781;margin-bottom:1px}
+.stat-val{font-size:20px;font-weight:500;line-height:1.2}
+.stat-sub{font-size:11px;color:#52514e;margin-top:2px}
+.card{background:#fff;border:0.5px solid rgba(11,11,11,.1);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:1rem}
+.card-title{font-size:11px;font-weight:500;color:#52514e;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.section-title{font-size:15px;font-weight:500;margin:1.25rem 0 .6rem;border-top:0.5px solid rgba(11,11,11,.08);padding-top:.75rem}
+.chart-wrap{position:relative;width:100%}
+.legend{display:flex;gap:12px;margin-bottom:6px;font-size:11px;color:#52514e;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:4px}
+.ldot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.race-banner{background:#E6F1FB;border:0.5px solid #B5D4F4;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.race-block{text-align:center;min-width:75px}
+.race-label{font-size:10px;color:#898781;margin-bottom:2px}
+.plan-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(11,11,11,.06)}
+.plan-row:last-child{border-bottom:none}
+.plan-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;flex-shrink:0;white-space:nowrap;margin-top:1px}
+.run-table{width:100%;border-collapse:collapse;font-size:12px}
+.run-table th{text-align:left;font-size:10px;font-weight:500;color:#898781;text-transform:uppercase;letter-spacing:.04em;padding:4px 6px 8px;border-bottom:0.5px solid rgba(11,11,11,.1)}
+.run-table td{padding:5px 6px;border-bottom:0.5px solid rgba(11,11,11,.05);vertical-align:middle}
+.run-table tr:last-child td{border-bottom:none}
+.hr-badge{font-size:10px;padding:1px 6px;border-radius:10px;font-weight:500}
+.insight-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid rgba(11,11,11,.06);font-size:12px}
+.insight-row:last-child{border-bottom:none}
+@media(max-width:600px){.grid2,.grid3,.grid4,.grid5{grid-template-columns:1fr 1fr}.race-banner{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<!-- GESAMTINDEX -->
+<div class="card" style="margin-bottom:1rem;background:linear-gradient(135deg,#f8fffe 0%,#f1f0eb 100%)">
+  <div class="card-title">Cardio-Fitness-Index — Männer, ~25 Jahre</div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:12px;flex-wrap:wrap">
+    <div style="flex:1">
+      <div style="font-size:11px;color:#898781;margin-bottom:4px">Geschätztes Gesamt-Perzentil</div>
+      <div style="font-size:32px;font-weight:500;color:#1baf7a">Top 25%</div>
+      <div style="font-size:11px;color:#52514e">basierend auf VO2max · Ruhe-HR · HRV · Cardio Recovery</div>
+    </div>
+    <div style="text-align:right">
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
+        <span style="font-size:10px;color:#898781;width:50px;text-align:right">schwach</span>
+        <div style="width:130px;height:8px;border-radius:4px;background:linear-gradient(to right,#e34948,#eda100,#1baf7a);position:relative">
+          <div style="position:absolute;top:-3px;left:75%;width:2px;height:14px;background:#0b0b0b;border-radius:1px"></div>
+        </div>
+        <span style="font-size:10px;color:#898781;width:50px">excellent</span>
+      </div>
+      <div style="font-size:10px;color:#898781;text-align:center;padding-left:50px">Du: ~75. Perzentil</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+    <div style="background:#fff;border-radius:8px;padding:8px 10px;border:0.5px solid rgba(11,11,11,.08)">
+      <div style="font-size:10px;color:#898781">VO2max</div>
+      <div style="font-size:16px;font-weight:500;color:#2a78d6">47,9</div>
+      <div style="font-size:10px;color:#1baf7a;font-weight:500">Gut · ~70. Pz.</div>
+      <div style="font-size:9px;color:#898781;margin-top:2px">&lt;42 schwach · &gt;46 gut · &gt;52 sehr gut</div>
+    </div>
+    <div style="background:#fff;border-radius:8px;padding:8px 10px;border:0.5px solid rgba(11,11,11,.08)">
+      <div style="font-size:10px;color:#898781">Ruhe-HR</div>
+      <div style="font-size:16px;font-weight:500;color:#e34948">56 bpm</div>
+      <div style="font-size:10px;color:#1baf7a;font-weight:500">Sehr gut · ~80. Pz.</div>
+      <div style="font-size:9px;color:#898781;margin-top:2px">&gt;70 schwach · &lt;62 gut · &lt;56 sehr gut</div>
+    </div>
+    <div style="background:#fff;border-radius:8px;padding:8px 10px;border:0.5px solid rgba(11,11,11,.08)">
+      <div style="font-size:10px;color:#898781">HRV (SDNN)</div>
+      <div style="font-size:16px;font-weight:500;color:#4a3aa7">79,4 ms</div>
+      <div style="font-size:10px;color:#1baf7a;font-weight:500">Sehr gut · ~75. Pz.</div>
+      <div style="font-size:9px;color:#898781;margin-top:2px">&lt;50 schwach · &gt;65 gut · &gt;80 sehr gut</div>
+      <div style="font-size:9px;color:#4a3aa7;margin-top:1px">Athletisch: &gt;100 ms</div>
+    </div>
+    <div style="background:#fff;border-radius:8px;padding:8px 10px;border:0.5px solid rgba(11,11,11,.08)">
+      <div style="font-size:10px;color:#898781">Cardio Recovery</div>
+      <div style="font-size:16px;font-weight:500;color:#1baf7a">34 bpm</div>
+      <div style="font-size:10px;color:#eda100;font-weight:500">Gut · ~60. Pz.</div>
+      <div style="font-size:9px;color:#898781;margin-top:2px">&lt;12 schwach · &gt;25 gut · &gt;43 sehr gut</div>
+      <div style="font-size:9px;color:#4a3aa7;margin-top:1px">Athletisch: &gt;43 bpm (Top 10%)</div>
+    </div>
+  </div>
+</div>
+
+<!-- WETTKAMPF BANNER -->
+<div class="race-banner">
+  <div style="flex:1;min-width:180px">
+    <div style="font-size:10px;color:#898781;margin-bottom:3px">Nächster Wettkampf</div>
+    <div style="font-size:17px;font-weight:500">Möhneseepokal 10 km</div>
+    <div style="font-size:12px;color:#52514e">20. September 2026</div>
+  </div>
+  <div class="race-block"><div class="race-label">noch</div><div style="font-size:32px;font-weight:500;color:#2a78d6;line-height:1" id="daysLeft">—</div><div style="font-size:10px;color:#898781">Tage</div></div>
+  <div class="race-block"><div class="race-label">Zielzeit</div><div style="font-size:20px;font-weight:500;color:#2a78d6">50:00</div><div style="font-size:10px;color:#898781">5:00 / km</div></div>
+  <div class="race-block"><div class="race-label">PR 10 km</div><div style="font-size:20px;font-weight:500;color:#1baf7a">55:49</div><div style="font-size:10px;color:#898781">5:35 / km</div></div>
+  <div class="race-block"><div class="race-label">nötige Steigerung</div><div style="font-size:14px;font-weight:500;color:#eda100;margin-top:4px">−5:49 min</div><div style="font-size:10px;color:#898781">ambitioniert aber machbar</div></div>
+  <div class="race-block"><div class="race-label">Trainingswochen</div><div style="font-size:20px;font-weight:500" id="weeksLeft">—</div><div style="font-size:10px;color:#898781">verbleibend</div></div>
+</div>
+
+<!-- KPIs -->
+<div class="grid5">
+  <div class="stat"><div class="stat-label">Läufe gesamt</div><div class="stat-val">25</div><div class="stat-sub">seit Sep 2025</div></div>
+  <div class="stat"><div class="stat-label">10 km PR</div><div class="stat-val" style="color:#1baf7a">55:49</div><div class="stat-sub">~Top 20% Bevölkerung M25</div></div>
+  <div class="stat"><div class="stat-label">Beste 5 km</div><div class="stat-val" style="color:#2a78d6">~26:20</div><div class="stat-sub">5:16/km · ~Top 25% M25</div></div>
+  <div class="stat"><div class="stat-label">HRV Ø Jun</div><div class="stat-val" style="color:#1baf7a">79,4</div><div class="stat-sub">ms · sehr gut</div></div>
+  <div class="stat"><div class="stat-label">Cardio Recovery</div><div class="stat-val">34</div><div class="stat-sub">bpm · gut · Top 40%</div></div>
+</div>
+
+<!-- PACE CHART -->
+<div class="card">
+  <div class="card-title">Pace-Verlauf (min/km) — eingefärbt nach Distanz</div>
+  <div class="legend">
+    <span><span class="ldot" style="background:#2a78d680"></span>&lt;4 km</span>
+    <span><span class="ldot" style="background:#2a78d6"></span>4–7 km</span>
+    <span><span class="ldot" style="background:#0C447C"></span>&gt;7 km</span>
+    <span style="font-size:10px;color:#898781;margin-left:6px">Kürzere Läufe sind naturgemäß schneller → Farbe zeigt Kontext</span>
+  </div>
+  <div class="chart-wrap" style="height:190px"><canvas id="paceChart"></canvas></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Herzfrequenz-Trend beim Laufen &nbsp;<span style="font-size:10px;color:#898781">niedrigere HR bei gleicher Pace = bessere Fitness</span></div>
+  <div class="legend">
+    <span><span class="ldot" style="background:#e34948"></span>Avg HR</span>
+    <span><span class="ldot" style="background:#eda100"></span>Trend</span>
+    <span><span class="ldot" style="background:#1baf7a;opacity:.6"></span>Zone 2 Ziel (136 bpm)</span>
+  </div>
+  <div class="chart-wrap" style="height:160px"><canvas id="hrTrendChart"></canvas></div>
+</div>
+
+<!-- DISTANZ -->
+<div class="card">
+  <div class="card-title">Distanz pro Lauf (km)</div>
+  <div class="chart-wrap" style="height:140px"><canvas id="distChart"></canvas></div>
+</div>
+
+<!-- HRV + CARDIO RECOVERY -->
+<div class="section-title">Erholung & Herzgesundheit</div>
+<div class="card">
+  <div class="card-title">HRV — Herzfrequenzvariabilität (ms Ø / Monat) &nbsp;<span style="font-size:10px;color:#898781">höher = besser erholt</span></div>
+  <div class="chart-wrap" style="height:155px"><canvas id="hrvChart"></canvas></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Cardio Recovery nach Lauf (bpm) &nbsp;<span style="font-size:10px;color:#898781">HR-Abfall nach 1 min — höher = bessere Fitness</span></div>
+  <div class="legend">
+    <span><span class="ldot" style="background:#1baf7a"></span>Recovery bpm</span>
+    <span><span class="ldot" style="background:#eda100"></span>Ziel &gt;30</span>
+  </div>
+  <div class="chart-wrap" style="height:155px"><canvas id="cardioChart"></canvas></div>
+</div>
+
+<!-- VO2MAX + RUHE-HR -->
+<div class="grid2">
+  <div class="card">
+    <div class="card-title">VO2max</div>
+    <div class="chart-wrap" style="height:145px"><canvas id="vo2Chart"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Ruhe-HR (bpm Ø / Monat)</div>
+    <div class="chart-wrap" style="height:145px"><canvas id="restChart"></canvas></div>
+  </div>
+</div>
+
+<!-- ALLE LÄUFE TABELLE -->
+<div class="card">
+  <div class="card-title">Alle Läufe</div>
+  <table class="run-table">
+    <thead><tr><th>Datum</th><th>Dist.</th><th>Zeit</th><th>Pace</th><th>Avg HR</th><th>Max HR</th><th>Kcal</th><th>Hm</th></tr></thead>
+    <tbody id="runTableBody"></tbody>
+  </table>
+</div>
+
+<!-- TRAININGSPLAN -->
+<div class="section-title">Trainingsplan — 9 Wochen bis Paderborn</div>
+<div class="card">
+  <div class="plan-row">
+    <span class="plan-tag" style="background:#E1F5EE;color:#085041">Di — Easy Run</span>
+    <div><div style="font-size:13px">30–40 min Zone 2 — Pace 7:30–8:30/km</div><div style="font-size:11px;color:#898781;margin-top:2px">HR Ziel: 117–136 bpm</div></div>
+  </div>
+  <div class="plan-row">
+    <span class="plan-tag" style="background:#E6F1FB;color:#0C447C">Sa — Long Run</span>
+    <div><div style="font-size:13px">50–80 min Zone 2 · +10% Distanz pro Woche</div><div style="font-size:11px;color:#898781;margin-top:2px">Woche 5: 10 km Probe · Woche 7: letzte lange Einheit</div></div>
+  </div>
+  <div class="plan-row">
+    <span class="plan-tag" style="background:#FAEEDA;color:#633806">ab Wo 5 — Tempo</span>
+    <div><div style="font-size:13px">4–6 × 1km bei 5:12/km + 400m Traben</div><div style="font-size:11px;color:#898781;margin-top:2px">HRV beachten — bei niedriger HRV lieber Easy</div></div>
+  </div>
+  <div class="plan-row">
+    <span class="plan-tag" style="background:#F1EFE8;color:#5F5E5A">Wo 8–9 — Tapering</span>
+    <div><div style="font-size:13px">Volumen −30%, Pace halten · 2 Tage vor Rennen: Pause</div></div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="section-title">Analyse</div>
+<div class="card">
+  <div class="insight-row"><span style="font-size:14px">🎯</span><span><strong>Erster 10km-Lauf heute!</strong> 55:49 min bei 5:35/km — nur 3:49 min vom Paderborn-Ziel entfernt. Sehr realistisch in 9 Wochen.</span></div>
+  <div class="insight-row"><span style="font-size:14px">↑</span><span><strong>HRV 79,4 ms</strong> in Jun 2026 — das ist ein sehr guter Wert und zeigt ausgezeichnete Erholung. Dein bester Monat bisher.</span></div>
+  <div class="insight-row"><span style="font-size:14px">↑</span><span><strong>Cardio Recovery steigt</strong> — von 16 bpm (Okt 2025) auf 34 bpm (Jun 2026). Direkte Messung deiner wachsenden Fitness.</span></div>
+  <div class="insight-row"><span style="font-size:14px">!</span><span><strong>Läufe noch zu intensiv</strong> — avg HR 141–162 bpm (Zone 3–4). Easy Runs sollten Zone 2 sein: 117–136 bpm.</span></div>
+</div>
+
+<script>
+const RUNS=[{"date":"2025-09-28","dist_km":2.78,"duration_min":20.2,"pace":"7:16","pace_dec":7.269,"elev":45.7,"kcal":208,"avg_hr":148,"max_hr":159},{"date":"2025-10-02","dist_km":2.75,"duration_min":15.6,"pace":"5:41","pace_dec":5.68,"elev":46.0,"kcal":204,"avg_hr":161,"max_hr":170},{"date":"2025-10-12","dist_km":5.48,"duration_min":35.6,"pace":"6:30","pace_dec":6.502,"elev":2.1,"kcal":374,"avg_hr":154,"max_hr":165},{"date":"2025-10-13","dist_km":6.11,"duration_min":39.7,"pace":"6:30","pace_dec":6.503,"elev":0,"kcal":407,"avg_hr":152,"max_hr":161},{"date":"2025-10-22","dist_km":7.59,"duration_min":49.6,"pace":"6:32","pace_dec":6.526,"elev":71.6,"kcal":604,"avg_hr":155,"max_hr":163},{"date":"2025-10-31","dist_km":2.78,"duration_min":17.5,"pace":"6:18","pace_dec":6.301,"elev":47.6,"kcal":208,"avg_hr":145,"max_hr":163},{"date":"2025-11-03","dist_km":11.35,"duration_min":74.2,"pace":"6:32","pace_dec":6.541,"elev":109.1,"kcal":821,"avg_hr":153,"max_hr":169},{"date":"2025-11-17","dist_km":2.74,"duration_min":15.3,"pace":"5:36","pace_dec":5.599,"elev":47.6,"kcal":206,"avg_hr":163,"max_hr":170},{"date":"2026-02-25","dist_km":6.09,"duration_min":38.9,"pace":"6:23","pace_dec":6.388,"elev":2.9,"kcal":413,"avg_hr":157,"max_hr":164},{"date":"2026-03-09","dist_km":7.68,"duration_min":50.0,"pace":"6:31","pace_dec":6.516,"elev":7.4,"kcal":541,"avg_hr":155,"max_hr":162},{"date":"2026-03-12","dist_km":6.88,"duration_min":47.6,"pace":"6:55","pace_dec":6.924,"elev":2.1,"kcal":505,"avg_hr":151,"max_hr":178},{"date":"2026-03-22","dist_km":7.48,"duration_min":49.1,"pace":"6:33","pace_dec":6.556,"elev":84.8,"kcal":570,"avg_hr":155,"max_hr":165},{"date":"2026-03-24","dist_km":6.03,"duration_min":38.6,"pace":"6:24","pace_dec":6.403,"elev":6.5,"kcal":417,"avg_hr":154,"max_hr":162},{"date":"2026-04-08","dist_km":6.0,"duration_min":40.3,"pace":"6:43","pace_dec":6.723,"elev":5.1,"kcal":409,"avg_hr":150,"max_hr":160},{"date":"2026-04-30","dist_km":3.79,"duration_min":26.0,"pace":"6:52","pace_dec":6.866,"elev":44.4,"kcal":265,"avg_hr":150,"max_hr":163},{"date":"2026-05-04","dist_km":7.03,"duration_min":46.5,"pace":"6:36","pace_dec":6.607,"elev":7.7,"kcal":491,"avg_hr":152,"max_hr":163},{"date":"2026-05-14","dist_km":8.04,"duration_min":57.3,"pace":"7:07","pace_dec":7.124,"elev":12.9,"kcal":611,"avg_hr":151,"max_hr":157},{"date":"2026-05-16","dist_km":8.01,"duration_min":53.0,"pace":"6:37","pace_dec":6.614,"elev":21.1,"kcal":534,"avg_hr":157,"max_hr":179},{"date":"2026-06-05","dist_km":5.01,"duration_min":26.4,"pace":"5:16","pace_dec":5.262,"elev":2.1,"kcal":328,"avg_hr":162,"max_hr":178},{"date":"2026-06-14","dist_km":6.02,"duration_min":43.7,"pace":"7:16","pace_dec":7.266,"elev":6.9,"kcal":408,"avg_hr":141,"max_hr":148},{"date":"2026-06-16","dist_km":8.02,"duration_min":55.7,"pace":"6:57","pace_dec":6.95,"elev":5.5,"kcal":566,"avg_hr":149,"max_hr":160},{"date":"2026-06-23","dist_km":6.05,"duration_min":40.6,"pace":"6:43","pace_dec":6.711,"elev":4.1,"kcal":403,"avg_hr":146,"max_hr":157},{"date":"2026-06-28","dist_km":5.06,"duration_min":29.6,"pace":"5:51","pace_dec":5.846,"elev":4.9,"kcal":331,"avg_hr":153,"max_hr":166},{"date":"2026-06-30","dist_km":10.01,"duration_min":55.82,"pace":"5:35","pace_dec":5.575,"elev":10.3,"kcal":683,"avg_hr":161,"max_hr":172}];
+const HRV={"2025-07":67.3,"2025-08":69.6,"2025-09":70.1,"2025-10":76.6,"2025-11":71.2,"2025-12":72.3,"2026-01":68.6,"2026-02":56.2,"2026-03":71.3,"2026-04":69.1,"2026-05":76.6,"2026-06":79.4};
+const CARDIO=[{"date":"2025-10-02","bpm":16.0},{"date":"2025-10-12","bpm":26.4},{"date":"2025-10-13","bpm":25.6},{"date":"2025-10-22","bpm":27.2},{"date":"2025-10-31","bpm":26.4},{"date":"2025-11-03","bpm":27.4},{"date":"2025-11-17","bpm":25.4},{"date":"2026-02-25","bpm":44.1},{"date":"2026-03-09","bpm":31.4},{"date":"2026-03-12","bpm":31.0},{"date":"2026-03-22","bpm":30.5},{"date":"2026-03-24","bpm":30.1},{"date":"2026-04-08","bpm":33.3},{"date":"2026-05-04","bpm":37.0},{"date":"2026-05-14","bpm":32.4},{"date":"2026-05-16","bpm":29.5},{"date":"2026-06-05","bpm":29.7},{"date":"2026-06-14","bpm":36.3},{"date":"2026-06-16","bpm":33.8},{"date":"2026-06-23","bpm":31.9},{"date":"2026-06-28","bpm":34.9},{"date":"2026-06-30","bpm":34.4}];
+const VO2={"2020-10":39.4,"2020-12":40.9,"2021-03":39.2,"2021-07":41.6,"2021-11":40.4,"2022-01":42.1,"2022-05":43.6,"2022-06":44.0,"2024-07":44.6,"2024-09":41.1,"2024-12":42.0,"2025-03":39.6,"2025-06":42.6,"2025-09":42.6,"2025-10":46.1,"2025-11":46.5,"2025-12":46.1,"2026-02":44.5,"2026-03":45.6,"2026-04":46.1,"2026-05":46.0,"2026-06":47.9};
+const RESTING={"2022-01":64.9,"2022-06":74.8,"2022-10":60.9,"2023-01":60.6,"2023-06":65.5,"2023-10":62.6,"2024-01":64.3,"2024-05":59.3,"2024-09":63.0,"2024-12":66.4,"2025-03":59.5,"2025-04":58.3,"2025-06":61.7,"2025-09":61.6,"2025-10":61.3,"2025-12":64.1,"2026-01":63.1,"2026-03":60.4,"2026-05":57.5,"2026-06":55.8};
+
+const grid='#e8e7e0',tick='#898781';
+document.getElementById('daysLeft').textContent=Math.ceil((new Date('2026-09-20')-new Date())/86400000);
+document.getElementById('weeksLeft').textContent=Math.ceil((new Date('2026-09-20')-new Date())/604800000);
+
+function linReg(ys){const n=ys.length,xs=ys.map((_,i)=>i),mx=xs.reduce((a,b)=>a+b)/n,my=ys.reduce((a,b)=>a+b)/n;const s=xs.reduce((sv,x,i)=>sv+(x-mx)*(ys[i]-my),0)/xs.reduce((sv,x)=>sv+(x-mx)**2,0);return xs.map(x=>+(my+s*(x-mx)).toFixed(3));}
+function fmtPace(dec){const s=Math.round(dec*60);return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;}
+function hrColor(hr){if(!hr)return '';if(hr<=136)return 'background:#E1F5EE;color:#085041';if(hr<=156)return 'background:#E6F1FB;color:#0C447C';if(hr<=176)return 'background:#FAEEDA;color:#633806';return 'background:#fcebeb;color:#A32D2D';}
+
+const labels=RUNS.map(r=>r.date.slice(5));
+const paceVals=RUNS.map(r=>r.pace_dec);
+const hrVals=RUNS.map(r=>r.avg_hr);
+const hrTrend=linReg(hrVals.filter(Boolean));
+const hrLabels=RUNS.filter(r=>r.avg_hr).map(r=>r.date.slice(5));
+
+// Pace Chart — Balken eingefärbt nach Distanz
+new Chart(document.getElementById('paceChart'),{
+  type:'bar',
+  data:{labels,datasets:[
+    {label:'Pace',data:paceVals,backgroundColor:RUNS.map(r=>r.dist_km>7?'#0C447C':r.dist_km>4?'#2a78d6':'#2a78d680'),borderRadius:3,borderSkipped:false},
+    {label:'Ziel 5:00',data:RUNS.map(()=>5.0),borderColor:'#1baf7a',borderWidth:1.5,borderDash:[4,3],pointRadius:0,type:'line'},
+    {label:'Ziel 5:12',data:RUNS.map(()=>5.2),borderColor:'#eda100',borderWidth:1,borderDash:[3,3],pointRadius:0,type:'line'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>`${i[0].label} — ${RUNS[i[0].dataIndex].dist_km}km`,label:i=>` Pace: ${fmtPace(i.raw)} /km`}}},
+    scales:{
+      x:{ticks:{color:tick,font:{size:9},maxRotation:45},grid:{display:false}},
+      y:{reverse:true,min:4.5,max:8.5,ticks:{color:tick,font:{size:10},callback:v=>fmtPace(v)},grid:{color:grid}}
+    }}
+});
+
+// HR Trend Chart — zeigt Fitness-Entwicklung
+new Chart(document.getElementById('hrTrendChart'),{
+  type:'line',
+  data:{labels:hrLabels,datasets:[
+    {label:'Avg HR',data:RUNS.filter(r=>r.avg_hr).map(r=>r.avg_hr),borderColor:'#e34948',borderWidth:2,backgroundColor:'#e3494812',pointRadius:4,pointHoverRadius:6,tension:0.2,fill:true},
+    {label:'Trend',data:hrTrend,borderColor:'#eda100',borderWidth:1.5,borderDash:[5,3],pointRadius:0},
+    {label:'Zone 2 Grenze',data:hrLabels.map(()=>136),borderColor:'#1baf7a',borderWidth:1,borderDash:[3,3],pointRadius:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:i=>{if(i.datasetIndex===0)return ` HR: ${i.raw} bpm`;return null;}}}},
+    scales:{
+      x:{ticks:{color:tick,font:{size:9},maxRotation:45},grid:{color:grid}},
+      y:{min:120,max:175,ticks:{color:tick,font:{size:10},callback:v=>v+' bpm'},grid:{color:grid}}
+    }}
+});
+
+// Distanz
+new Chart(document.getElementById('distChart'),{type:'bar',data:{labels,datasets:[{label:'Distanz',data:RUNS.map(r=>r.dist_km),backgroundColor:RUNS.map(r=>r.dist_km>=8?'#0C447C':r.dist_km>=6?'#2a78d6':r.dist_km>=4?'#2a78d680':'#2a78d635'),borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>` ${i.raw} km`}}},scales:{x:{ticks:{color:tick,font:{size:9},maxRotation:45},grid:{display:false}},y:{min:0,max:12,ticks:{color:tick,font:{size:10},callback:v=>v+' km'},grid:{color:grid}}}}});
+
+// HRV
+const hKeys=Object.keys(HRV).sort();
+new Chart(document.getElementById('hrvChart'),{type:'line',data:{labels:hKeys,datasets:[{label:'HRV',data:hKeys.map(m=>HRV[m]),borderColor:'#4a3aa7',borderWidth:2,backgroundColor:'#4a3aa715',pointRadius:4,pointHoverRadius:6,tension:0.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>` ${i.raw} ms`}}},scales:{x:{ticks:{color:tick,font:{size:10},maxRotation:0},grid:{color:grid}},y:{min:40,max:90,ticks:{color:tick,font:{size:10},callback:v=>v+' ms'},grid:{color:grid}}}}});
+
+// Cardio Recovery
+new Chart(document.getElementById('cardioChart'),{type:'line',data:{labels:CARDIO.map(r=>r.date.slice(5)),datasets:[
+  {label:'Recovery',data:CARDIO.map(r=>r.bpm),borderColor:'#1baf7a',borderWidth:2,backgroundColor:'#1baf7a15',pointRadius:4,pointHoverRadius:6,tension:0.2,fill:true},
+  {label:'Ziel 30',data:CARDIO.map(()=>30),borderColor:'#eda100',borderWidth:1,borderDash:[4,3],pointRadius:0}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:i=>` ${i.raw} bpm`}}},scales:{x:{ticks:{color:tick,font:{size:9},maxRotation:45},grid:{color:grid}},y:{min:10,max:50,ticks:{color:tick,font:{size:10},callback:v=>v+' bpm'},grid:{color:grid}}}}});
+
+// VO2max
+const vKeys=Object.keys(VO2).sort();
+new Chart(document.getElementById('vo2Chart'),{type:'line',data:{labels:vKeys,datasets:[{label:'VO2max',data:vKeys.map(m=>VO2[m]),borderColor:'#2a78d6',borderWidth:2,backgroundColor:'#2a78d610',pointRadius:0,tension:0.35,fill:true},{label:'Ziel',data:vKeys.map(()=>50),borderColor:'#e34948',borderWidth:1,borderDash:[4,4],pointRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},scales:{x:{ticks:{color:tick,font:{size:9},maxRotation:0,autoSkip:true,maxTicksLimit:8},grid:{color:grid}},y:{min:36,max:52,ticks:{color:tick,font:{size:10}},grid:{color:grid}}}}});
+
+// Ruhe-HR
+const rKeys=Object.keys(RESTING).sort();
+new Chart(document.getElementById('restChart'),{type:'line',data:{labels:rKeys,datasets:[{label:'Ruhe-HR',data:rKeys.map(m=>RESTING[m]),borderColor:'#e34948',borderWidth:2,backgroundColor:'#e3494810',pointRadius:0,tension:0.35,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:i=>` ${i.raw} bpm`}}},scales:{x:{ticks:{color:tick,font:{size:9},maxRotation:0,autoSkip:true,maxTicksLimit:8},grid:{color:grid}},y:{min:40,max:80,ticks:{color:tick,font:{size:10},callback:v=>v+' bpm'},grid:{color:grid}}}}});
+
+// Tabelle
+const tbody=document.getElementById('runTableBody');
+[...RUNS].reverse().forEach(r=>{
+  const tr=document.createElement('tr');
+  const dur=`${Math.floor(r.duration_min)}:${Math.round((r.duration_min%1)*60).toString().padStart(2,'0')}`;
+  tr.innerHTML=`<td style="color:#52514e;white-space:nowrap">${r.date}</td><td><strong>${r.dist_km}</strong> km</td><td>${dur} min</td><td><strong>${r.pace}</strong> /km</td><td>${r.avg_hr?`<span class="hr-badge" style="${hrColor(r.avg_hr)}">${r.avg_hr}</span>`:'-'}</td><td style="color:#52514e">${r.max_hr||'-'}</td><td style="color:#52514e">${r.kcal}</td><td style="color:#52514e">${r.elev>0?r.elev+' m':'-'}</td>`;
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>
